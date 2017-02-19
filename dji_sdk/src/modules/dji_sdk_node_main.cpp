@@ -3,7 +3,7 @@
  *  @date July 29th, 2016
  *
  *  @brief
- *  Broadcast and Mobile callbacks are implemented here. 
+ *  Broadcast and Mobile callbacks are implemented here.
  *
  *  @copyright 2016 DJI. All rights reserved.
  *
@@ -19,10 +19,10 @@
 
 void DJISDKNode::transparent_transmission_callback(uint8_t *buf, uint8_t len)
 {
-	dji_sdk::TransparentTransmissionData transparent_transmission_data;
-	transparent_transmission_data.data.resize(len);
-	memcpy(&transparent_transmission_data.data[0], buf, len);
-	data_received_from_remote_device_publisher.publish(transparent_transmission_data);
+  dji_sdk::TransparentTransmissionData transparent_transmission_data;
+  transparent_transmission_data.data.resize(len);
+  memcpy(&transparent_transmission_data.data[0], buf, len);
+  data_received_from_remote_device_publisher.publish(transparent_transmission_data);
 
 }
 void DJISDKNode::broadcast_callback()
@@ -34,7 +34,7 @@ void DJISDKNode::broadcast_callback()
 
     static int frame_id = 0;
     frame_id ++;
-   
+
     auto current_time = ros::Time::now();
 
     if(msg_flags & HAS_TIME){
@@ -91,7 +91,7 @@ void DJISDKNode::broadcast_callback()
                 global_position_ref.longitude,
                 global_position_ref.latitude
                 );
-        local_position.z = global_position.height;
+        local_position.z = -1 * global_position.height;
         local_position.ts = global_position.ts;
         local_position_ref = local_position;
         local_position_publisher.publish(local_position);
@@ -120,7 +120,7 @@ void DJISDKNode::broadcast_callback()
         acceleration.az = bc_data.a.z;
         acceleration_publisher.publish(acceleration);
     }
-    
+
 
     //update odom msg
     if ( (msg_flags & HAS_POS) && (msg_flags & HAS_Q) && (msg_flags & HAS_W) && (msg_flags & HAS_V) ) {
@@ -148,90 +148,90 @@ void DJISDKNode::broadcast_callback()
 
     if(version > MAKE_VERSION(3,1,10,0)) {
 
-    	//update gimbal msg
-    	if (msg_flags & A3_HAS_GIMBAL) {
-        	gimbal.header.frame_id = "/gimbal";
-        	gimbal.header.stamp= current_time;
-        	gimbal.ts = bc_data.timeStamp.time;
-        	gimbal.roll = bc_data.gimbal.roll;
-       	 	gimbal.pitch = bc_data.gimbal.pitch;
-        	gimbal.yaw = bc_data.gimbal.yaw;
-        	gimbal_publisher.publish(gimbal);
-    	}
+      //update gimbal msg
+      if (msg_flags & A3_HAS_GIMBAL) {
+          gimbal.header.frame_id = "/gimbal";
+          gimbal.header.stamp= current_time;
+          gimbal.ts = bc_data.timeStamp.time;
+          gimbal.roll = bc_data.gimbal.roll;
+          gimbal.pitch = bc_data.gimbal.pitch;
+          gimbal.yaw = bc_data.gimbal.yaw;
+          gimbal_publisher.publish(gimbal);
+      }
 
-   	 //update rc_channel msg
-    	if (msg_flags & A3_HAS_RC) {
-        	rc_channels.header.frame_id = "/rc";
-        	rc_channels.header.stamp = current_time;
-        	rc_channels.ts = bc_data.timeStamp.time;
-       	 	rc_channels.pitch = bc_data.rc.pitch;
-        	rc_channels.roll = bc_data.rc.roll;
-        	rc_channels.mode = bc_data.rc.mode;
-        	rc_channels.gear = bc_data.rc.gear;
-        	rc_channels.throttle = bc_data.rc.throttle;
-        	rc_channels.yaw = bc_data.rc.yaw;
-        	rc_channels_publisher.publish(rc_channels);
-    	}
+     //update rc_channel msg
+      if (msg_flags & A3_HAS_RC) {
+          rc_channels.header.frame_id = "/rc";
+          rc_channels.header.stamp = current_time;
+          rc_channels.ts = bc_data.timeStamp.time;
+          rc_channels.pitch = bc_data.rc.pitch;
+          rc_channels.roll = bc_data.rc.roll;
+          rc_channels.mode = bc_data.rc.mode;
+          rc_channels.gear = bc_data.rc.gear;
+          rc_channels.throttle = bc_data.rc.throttle;
+          rc_channels.yaw = bc_data.rc.yaw;
+          rc_channels_publisher.publish(rc_channels);
+      }
 
 
-	if (msg_flags & A3_HAS_GPS){
-		A3_GPS.date = bc_data.gps.date;
-		A3_GPS.time = bc_data.gps.time;
-		A3_GPS.longitude = bc_data.gps.longitude;
-		A3_GPS.latitude = bc_data.gps.latitude;
-		A3_GPS.height_above_sea = bc_data.gps.Hmsl;
-		A3_GPS.velocity_north = bc_data.gps.velocityNorth;
-		A3_GPS.velocity_east= bc_data.gps.velocityEast;
-		A3_GPS.velocity_ground = bc_data.gps.velocityGround;
-		A3_GPS_info_publisher.publish(A3_GPS);
-	}
-	if (msg_flags & A3_HAS_RTK)
-		A3_RTK.date = bc_data.rtk.date;
-		A3_RTK.time = bc_data.rtk.time;
-		A3_RTK.longitude_RTK = bc_data.rtk.longitude;
-		A3_RTK.latitude_RTK = bc_data.rtk.latitude;
-		A3_RTK.height_above_sea_RTK = bc_data.rtk.Hmsl;
-		A3_RTK.velocity_north = bc_data.rtk.velocityNorth;
-		A3_RTK.velocity_east = bc_data.rtk.velocityEast;
-		A3_RTK.velocity_ground = bc_data.rtk.velocityGround;
-		A3_RTK.yaw = bc_data.rtk.yaw;
-		A3_RTK.position_flag = bc_data.rtk.posFlag;
-		A3_RTK.yaw_flag = bc_data.rtk.yawFlag;
-		A3_RTK_info_publisher.publish(A3_RTK);
+  if (msg_flags & A3_HAS_GPS){
+    A3_GPS.date = bc_data.gps.date;
+    A3_GPS.time = bc_data.gps.time;
+    A3_GPS.longitude = bc_data.gps.longitude;
+    A3_GPS.latitude = bc_data.gps.latitude;
+    A3_GPS.height_above_sea = bc_data.gps.Hmsl;
+    A3_GPS.velocity_north = bc_data.gps.velocityNorth;
+    A3_GPS.velocity_east= bc_data.gps.velocityEast;
+    A3_GPS.velocity_ground = bc_data.gps.velocityGround;
+    A3_GPS_info_publisher.publish(A3_GPS);
+  }
+  if (msg_flags & A3_HAS_RTK)
+    A3_RTK.date = bc_data.rtk.date;
+    A3_RTK.time = bc_data.rtk.time;
+    A3_RTK.longitude_RTK = bc_data.rtk.longitude;
+    A3_RTK.latitude_RTK = bc_data.rtk.latitude;
+    A3_RTK.height_above_sea_RTK = bc_data.rtk.Hmsl;
+    A3_RTK.velocity_north = bc_data.rtk.velocityNorth;
+    A3_RTK.velocity_east = bc_data.rtk.velocityEast;
+    A3_RTK.velocity_ground = bc_data.rtk.velocityGround;
+    A3_RTK.yaw = bc_data.rtk.yaw;
+    A3_RTK.position_flag = bc_data.rtk.posFlag;
+    A3_RTK.yaw_flag = bc_data.rtk.yawFlag;
+    A3_RTK_info_publisher.publish(A3_RTK);
 
-    	//update compass msg
-    	if (msg_flags & A3_HAS_MAG) {
-        	compass.header.frame_id = "/world";
-        	compass.header.stamp = current_time;
-        	compass.ts = bc_data.timeStamp.time;
-        	compass.x = bc_data.mag.x;
-        	compass.y = bc_data.mag.y;
-        	compass.z = bc_data.mag.z;
-        	compass_publisher.publish(compass);
-    	}
+      //update compass msg
+      if (msg_flags & A3_HAS_MAG) {
+          compass.header.frame_id = "/world";
+          compass.header.stamp = current_time;
+          compass.ts = bc_data.timeStamp.time;
+          compass.x = bc_data.mag.x;
+          compass.y = bc_data.mag.y;
+          compass.z = bc_data.mag.z;
+          compass_publisher.publish(compass);
+      }
 
-    	//update flight_status
-    	if (msg_flags & A3_HAS_STATUS) {
-        	std_msgs::UInt8 msg;
-        	flight_status = bc_data.status;
-        	msg.data = flight_status;
-        	flight_status_publisher.publish(msg);
-    	}
+      //update flight_status
+      if (msg_flags & A3_HAS_STATUS) {
+          std_msgs::UInt8 msg;
+          flight_status = bc_data.status;
+          msg.data = flight_status;
+          flight_status_publisher.publish(msg);
+      }
 
-    	//update battery msg
-    	if (msg_flags & A3_HAS_BATTERY) {
-        	power_status.percentage = bc_data.battery;
-        	power_status_publisher.publish(power_status);
-    	}
+      //update battery msg
+      if (msg_flags & A3_HAS_BATTERY) {
+          power_status.percentage = bc_data.battery;
+          power_status_publisher.publish(power_status);
+      }
 
-    	//update flight control info
-    	if (msg_flags & A3_HAS_DEVICE) {
-		flight_control_info.control_mode = bc_data.ctrlInfo.mode;
-        	flight_control_info.cur_ctrl_dev_in_navi_mode = bc_data.ctrlInfo.deviceStatus;
-        	flight_control_info.serial_req_status = bc_data.ctrlInfo.flightStatus;
-		flight_control_info.virtual_rc_status = bc_data.ctrlInfo.vrcStatus;
-        	flight_control_info_publisher.publish(flight_control_info);
-    	}
+      //update flight control info
+      if (msg_flags & A3_HAS_DEVICE) {
+    flight_control_info.control_mode = bc_data.ctrlInfo.mode;
+          flight_control_info.cur_ctrl_dev_in_navi_mode = bc_data.ctrlInfo.deviceStatus;
+          flight_control_info.serial_req_status = bc_data.ctrlInfo.flightStatus;
+    flight_control_info.virtual_rc_status = bc_data.ctrlInfo.vrcStatus;
+          flight_control_info_publisher.publish(flight_control_info);
+      }
 
     }
 
@@ -241,75 +241,75 @@ void DJISDKNode::broadcast_callback()
 
     else {
 
-     	if (msg_flags & HAS_GIMBAL) {
-        	gimbal.header.frame_id = "/gimbal";
-        	gimbal.header.stamp= current_time;
-        	gimbal.ts = bc_data.timeStamp.time;
-        	gimbal.roll = bc_data.gimbal.roll;
-        	gimbal.pitch = bc_data.gimbal.pitch;
-        	gimbal.yaw = bc_data.gimbal.yaw;
-        	gimbal_publisher.publish(gimbal);
-    	}
+      if (msg_flags & HAS_GIMBAL) {
+          gimbal.header.frame_id = "/gimbal";
+          gimbal.header.stamp= current_time;
+          gimbal.ts = bc_data.timeStamp.time;
+          gimbal.roll = bc_data.gimbal.roll;
+          gimbal.pitch = bc_data.gimbal.pitch;
+          gimbal.yaw = bc_data.gimbal.yaw;
+          gimbal_publisher.publish(gimbal);
+      }
 
-    	//update rc_channel msg
-    	if (msg_flags & HAS_RC) {
-       	 	rc_channels.header.frame_id = "/rc";
-        	rc_channels.header.stamp = current_time;
-        	rc_channels.ts = bc_data.timeStamp.time;
-        	rc_channels.pitch = bc_data.rc.pitch;
-        	rc_channels.roll = bc_data.rc.roll;
-        	rc_channels.mode = bc_data.rc.mode;
-        	rc_channels.gear = bc_data.rc.gear;
-        	rc_channels.throttle = bc_data.rc.throttle;
-        	rc_channels.yaw = bc_data.rc.yaw;
-        	rc_channels_publisher.publish(rc_channels);
-    	}
+      //update rc_channel msg
+      if (msg_flags & HAS_RC) {
+          rc_channels.header.frame_id = "/rc";
+          rc_channels.header.stamp = current_time;
+          rc_channels.ts = bc_data.timeStamp.time;
+          rc_channels.pitch = bc_data.rc.pitch;
+          rc_channels.roll = bc_data.rc.roll;
+          rc_channels.mode = bc_data.rc.mode;
+          rc_channels.gear = bc_data.rc.gear;
+          rc_channels.throttle = bc_data.rc.throttle;
+          rc_channels.yaw = bc_data.rc.yaw;
+          rc_channels_publisher.publish(rc_channels);
+      }
 
 
 
-    	//update compass msg
-    	if (msg_flags & HAS_MAG) {
-        	compass.header.frame_id = "/world";
-        	compass.header.stamp = current_time;
-        	compass.ts = bc_data.timeStamp.time;
-        	compass.x = bc_data.mag.x;
-        	compass.y = bc_data.mag.y;
-        	compass.z = bc_data.mag.z;
-        	compass_publisher.publish(compass);
-    	}	
+      //update compass msg
+      if (msg_flags & HAS_MAG) {
+          compass.header.frame_id = "/world";
+          compass.header.stamp = current_time;
+          compass.ts = bc_data.timeStamp.time;
+          compass.x = bc_data.mag.x;
+          compass.y = bc_data.mag.y;
+          compass.z = bc_data.mag.z;
+          compass_publisher.publish(compass);
+      }
 
-    	//update flight_status
-    	if (msg_flags & HAS_STATUS) {
-        	std_msgs::UInt8 msg;
-        	flight_status = bc_data.status;
-        	msg.data = flight_status;
-        	flight_status_publisher.publish(msg);
-    	}
+      //update flight_status
+      if (msg_flags & HAS_STATUS) {
+          std_msgs::UInt8 msg;
+          flight_status = bc_data.status;
+          msg.data = flight_status;
+          flight_status_publisher.publish(msg);
+      }
 
-    	//update battery msg
-    	if (msg_flags & HAS_BATTERY) {
-        	power_status.percentage = bc_data.battery;
-        	power_status_publisher.publish(power_status);
-    	}
+      //update battery msg
+      if (msg_flags & HAS_BATTERY) {
+          power_status.percentage = bc_data.battery;
+          power_status_publisher.publish(power_status);
+      }
 
-    	//update flight control info
-    	if (msg_flags & HAS_DEVICE) {
-		flight_control_info.control_mode = bc_data.ctrlInfo.mode;
-        	flight_control_info.cur_ctrl_dev_in_navi_mode = bc_data.ctrlInfo.deviceStatus;
-        	flight_control_info.serial_req_status = bc_data.ctrlInfo.flightStatus;
-		flight_control_info.virtual_rc_status = bc_data.ctrlInfo.vrcStatus;
-        	flight_control_info_publisher.publish(flight_control_info);
-    	}
+      //update flight control info
+      if (msg_flags & HAS_DEVICE) {
+    flight_control_info.control_mode = bc_data.ctrlInfo.mode;
+          flight_control_info.cur_ctrl_dev_in_navi_mode = bc_data.ctrlInfo.deviceStatus;
+          flight_control_info.serial_req_status = bc_data.ctrlInfo.flightStatus;
+    flight_control_info.virtual_rc_status = bc_data.ctrlInfo.vrcStatus;
+          flight_control_info_publisher.publish(flight_control_info);
+      }
 
     }
 
 
 
     //update obtaincontrol msg
-	std_msgs::UInt8 msg;
-	activation_result = bc_data.activation;
-	msg.data = bc_data.activation;
-	activation_publisher.publish(msg);
+  std_msgs::UInt8 msg;
+  activation_result = bc_data.activation;
+  msg.data = bc_data.activation;
+  activation_publisher.publish(msg);
 
 }
 
@@ -324,7 +324,7 @@ int DJISDKNode::init_parameters(ros::NodeHandle& nh_private)
     std::string app_bundle_id; //reserved
     std::string enc_key;
     int uart_or_usb;
-    
+
 
     nh_private.param("serial_name", serial_name, std::string("/dev/ttyTHS1"));
     nh_private.param("baud_rate", baud_rate, 230400);
@@ -362,7 +362,7 @@ int DJISDKNode::init_parameters(ros::NodeHandle& nh_private)
     rosAdapter->activate(&user_act_data, NULL);
     rosAdapter->setBroadcastCallback(&DJISDKNode::broadcast_callback, this);
     rosAdapter->setFromMobileCallback(&DJISDKNode::transparent_transmission_callback,this);
-   
+
     return 0;
 }
 
@@ -389,13 +389,13 @@ DJISDKNode::DJISDKNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private) : dji_s
 
 
 void DJISDKNode::gps_convert_ned(float &ned_x, float &ned_y,
-		double gps_t_lon, double gps_t_lat,
-		double gps_r_lon, double gps_r_lat)
+    double gps_t_lon, double gps_t_lat,
+    double gps_r_lon, double gps_r_lat)
 {
-	double d_lon = gps_t_lon - gps_r_lon;
-	double d_lat = gps_t_lat - gps_r_lat;
-	ned_x = DEG2RAD(d_lat) * C_EARTH;
-	ned_y = DEG2RAD(d_lon) * C_EARTH * cos(DEG2RAD(gps_t_lat));
+  double d_lon = gps_t_lon - gps_r_lon;
+  double d_lat = gps_t_lat - gps_r_lat;
+  ned_x = DEG2RAD(d_lat) * C_EARTH;
+  ned_y = DEG2RAD(d_lon) * C_EARTH * cos(DEG2RAD(gps_t_lat));
 };
 
 dji_sdk::LocalPosition DJISDKNode::gps_convert_ned(dji_sdk::GlobalPosition loc)
